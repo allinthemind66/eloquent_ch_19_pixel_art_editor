@@ -33,3 +33,11 @@ function elt (type, props, ...children) {
   }
   return dom;
 }
+
+const scale = 10;
+
+class PictureCanvas {
+  constructor(picture, pointerDown){
+    
+  }
+}
