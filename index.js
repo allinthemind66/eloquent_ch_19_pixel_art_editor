@@ -63,3 +63,28 @@ function drawPicture(picture, canvas, scale) {
     }
   }
 }
+
+PictureCanvas.prototype.mouse = function(downEvent, onDown) {
+  if(downEvent.button != 0) return;
+  let pos = pointerPosition(downEvent, this.dom);
+  let onMove = onDown(pos);
+  if (!onMove) return;
+  let move = moveEvent => {
+    if(moveEvent.buttons == 0) {
+      this.dom.removeEventListener("mousemove", move);
+    } else {
+      let newPos = pointerPosition(mouseEvent, this.dom);
+      if (newPos.x == pos.x && newPos.y == pos.y) return;
+      pos = newPos;
+      onMove(newPos);
+    }
+  };
+  this.dom.addEventListener("mousemove", move);
+}
+
+function pointerPosition(pos, domNode) {
+  let rect = domNode.getBoundingClientRect();
+  return {x: Math.floor((po.clientX - rect.left) / scale),
+          y: Math.floor((pos.clientY - rect.top)/ scale);
+  }
+}
