@@ -74,7 +74,7 @@ PictureCanvas.prototype.mouse = function(downEvent, onDown) {
     if(moveEvent.buttons == 0) {
       this.dom.removeEventListener("mousemove", move);
     } else {
-      let newPos = pointerPosition(mouseEvent, this.dom);
+      let newPos = pointerPosition(moveEvent, this.dom);
       if (newPos.x == pos.x && newPos.y == pos.y) return;
       pos = newPos;
       onMove(newPos);
@@ -89,7 +89,7 @@ function pointerPosition(pos, domNode) {
   //returns the x and y calue of a pixel. clientX and clientY are the position in the browser.
   //you subtract the left and top coordinates of the actual canvas and divide by the scale to get the "pixel" on the canvas.
   return {x: Math.floor((pos.clientX - rect.left) / scale),
-          y: Math.floor((pos.clientY - rect.top)/ scale);
+          y: Math.floor((pos.clientY - rect.top)/ scale)
   }
 }
 
@@ -214,3 +214,22 @@ function fill({x,y}, state, dispatch){
   }
   dispatch({picture: state.picture.draw(drawn)});
 }
+
+function pick(pos, state, dispatch){
+  dispatch({color: state.picture.pixel(pos.x, pos.y)});
+}
+
+let state = {
+tool: "draw",
+color: "#000000",
+picture: Picture.empty(60, 30, "#f0f0f0")
+};
+let app = new PixelEditor(state, {
+tools: {draw, fill, rectangle, pick},
+controls: [ToolSelect, ColorSelect],
+dispatch(action) {
+  state = updateState(state, action);
+  app.syncState(state);
+}
+});
+document.querySelector("div").appendChild(app.dom);
