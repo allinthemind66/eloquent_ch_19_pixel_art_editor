@@ -177,10 +177,10 @@ function rectangle(start, state, dispatch) {
   function drawRectangle(pos) {
     let xStart = Math.min(start.x, pos.x);
     let yStart = Math.min(start.y, pos.y);
-    let xEnd = Math.min(start.x, pos.x);
-    let yEnd = Math.min(start.y, pos.y);
+    let xEnd = Math.max(start.x, pos.x);
+    let yEnd = Math.max(start.y, pos.y);
     let drawn = [];
-    for (let y = yStart; y <=yEnd; y++){
+    for (let y = yStart; y <= yEnd; y++){
       for(let x = xStart; x <= xEnd; x++){
         drawn.push({x, y, color: state.color})
       }
@@ -220,16 +220,16 @@ function pick(pos, state, dispatch){
 }
 
 let state = {
-tool: "draw",
-color: "#000000",
-picture: Picture.empty(60, 30, "#f0f0f0")
+  tool: "draw",
+  color: "#000000",
+  picture: Picture.empty(60, 30, "#f0f0f0")
 };
-let app = new PixelEditor(state, {
-tools: {draw, fill, rectangle, pick},
-controls: [ToolSelect, ColorSelect],
-dispatch(action) {
-  state = updateState(state, action);
-  app.syncState(state);
+  let app = new PixelEditor(state, {
+    tools: {draw, fill, rectangle, pick},
+    controls: [ToolSelect, ColorSelect],
+    dispatch(action) {
+      state = updateState(state, action);
+      app.syncState(state);
 }
 });
 document.querySelector("div").appendChild(app.dom);
