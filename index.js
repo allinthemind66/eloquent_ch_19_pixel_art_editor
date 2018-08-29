@@ -39,6 +39,7 @@ const scale = 10;
 class PictureCanvas {
   constructor(picture, pointerDown){
     this.dom = elt("canvas", {
+      //pointerDown is a callback given the position of the pixel that was clicked in picture coord.
       onmousedown: event => this.mouse(event, pointerDown),
       ontouchstart: event => this.touch(event, pointerDown)
     });
@@ -84,7 +85,29 @@ PictureCanvas.prototype.mouse = function(downEvent, onDown) {
 
 function pointerPosition(pos, domNode) {
   let rect = domNode.getBoundingClientRect();
-  return {x: Math.floor((po.clientX - rect.left) / scale),
+  //pos is the position of the mouseEvent
+  //returns the x and y calue of a pixel. clientX and clientY are the position in the browser.
+  //you subtract the left and top coordinates of the actual canvas and divide by the scale to get the "pixel" on the canvas.
+  return {x: Math.floor((pos.clientX - rect.left) / scale),
           y: Math.floor((pos.clientY - rect.top)/ scale);
   }
 }
+
+PictureCanvas.prototype.touch = function(startEvent, onDown) {
+  let pos = pointerPosition(startEvent.touches[0], this.dom);
+  let onMove = onDown(pos);
+  startEvent.preventDefault();
+  if (!onMove) return;
+  let move = moveEvent => {
+    let newPos = pointerPosition(moveEvent.touches[0], this.dom);
+    if (newPos.x == pos.x && newPos.y == pos.y) return;
+    pos = newPos;
+    onMove(newPos);
+  };
+  let end = () => {
+    this.dom.removeEventListener("touchmove", move);
+    this.dom.removeEventListener("touchend", end);
+  };
+  this.dom.addEventListener("touchmove", move);
+  this.dom.addEventListener("touchend", end);
+};
