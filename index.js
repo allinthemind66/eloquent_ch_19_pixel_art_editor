@@ -239,7 +239,24 @@ class SaveButton {
   syncState(state) { this.picture = state.picture; }
 }
 
+class LoadButton {
+  constructor(_, {dispatch}){
+    this.dom = elt("button", {
+      onclick: () => startLoad(dispatch)
+    }, "📁 Load")
+  }
+  syncState(){}
+}
 
+function startLoad(dispatch){
+  let input = elt("input", {
+    type: "file",
+    onchange: () => finishLoad(input.files[0], dispatch)
+  });
+  document.body.appendChild(input);
+  input.click();
+  // input.remove();
+}
 
 let state = {
   tool: "draw",
@@ -248,7 +265,7 @@ let state = {
 };
   let app = new PixelEditor(state, {
     tools: {draw, fill, rectangle, pick},
-    controls: [ToolSelect, ColorSelect, SaveButton],
+    controls: [ToolSelect, ColorSelect, SaveButton, LoadButton],
     dispatch(action) {
       state = updateState(state, action);
       app.syncState(state);
