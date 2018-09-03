@@ -218,27 +218,11 @@ function fill({x,y}, state, dispatch){
 function pick(pos, state, dispatch){
   dispatch({color: state.picture.pixel(pos.x, pos.y)});
 }
-
-let state = {
-  tool: "draw",
-  color: "#000000",
-  picture: Picture.empty(60, 30, "#f0f0f0")
-};
-  let app = new PixelEditor(state, {
-    tools: {draw, fill, rectangle, pick},
-    controls: [ToolSelect, ColorSelect],
-    dispatch(action) {
-      state = updateState(state, action);
-      app.syncState(state);
-}
-});
-document.querySelector("div").appendChild(app.dom);
-
 class SaveButton {
   constructor(state){
     this.picture = state.picture;
     this.dom = elt("button", {
-      onclick: () => this.save();
+      onclick: () => this.save()
     }, "💾 Save")
   }
   save() {
@@ -254,3 +238,21 @@ class SaveButton {
   }
   syncState(state) { this.picture = state.picture; }
 }
+
+
+
+let state = {
+  tool: "draw",
+  color: "#000000",
+  picture: Picture.empty(60, 30, "#f0f0f0")
+};
+  let app = new PixelEditor(state, {
+    tools: {draw, fill, rectangle, pick},
+    controls: [ToolSelect, ColorSelect, SaveButton],
+    dispatch(action) {
+      state = updateState(state, action);
+      app.syncState(state);
+}
+});
+
+document.querySelector("div").appendChild(app.dom);
