@@ -312,6 +312,21 @@ function historyUpdateState(state, action) {
   }
 }
 
+
+class UndoButton {
+  constructor(state, {dispatch}) {
+    this.dom = elt("button", {
+      onclick: () => dispatch({undo: true}),
+      disabled: state.done.length == 0
+    }, "Undo");
+  }
+  syncState(state) {
+    this.dom.disabled = state.done.length == 0;
+  }
+}
+
+
+
 let state = {
   tool: "draw",
   color: "#000000",
@@ -319,7 +334,7 @@ let state = {
 };
   let app = new PixelEditor(state, {
     tools: {draw, fill, rectangle, pick},
-    controls: [ToolSelect, ColorSelect, SaveButton, LoadButton],
+    controls: [ToolSelect, ColorSelect, SaveButton, LoadButton, UndoButton],
     dispatch(action) {
       state = updateState(state, action);
       app.syncState(state);
