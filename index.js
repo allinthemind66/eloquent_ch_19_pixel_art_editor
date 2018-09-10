@@ -270,24 +270,30 @@ function finishLoad(file, dispatch){
   reader.readAsDataURL(file);
 }
 
-let pictureFromImage(image){
+let pictureFromImage = (image) => {
   let width = Math.min(100, image.width);
   let height = Math.min(100, image.height);
   let canvas = elt("canvas", {width, height});
   let cx = canvas.getContext("2d");
   cx.drawImage(image,0,0);
   let pixels = [];
+  //data returned from getImageData is an array of color components
   let {data} = cx.getImageData(0,0,width, height);
+  debugger
 
   function hex(n){
+    //padStart wont append the value if the length of the string is reached (or the same as the first argument to padStart)
     return n.toString(16).padStart(2, "0");
   }
-  for (let i = 0; i < data.length; i++){
+  for (let i = 0; i < data.length; i+=4){
+    //iterates thru 4 values at a time, ignoring the 4th value
+    //data is a big array containing 4 values for each pixel (rgba)
     let [r,g,b] = data.slice(i, i+3);
     pixels.push("#" + hex(r) + hex(g) + hex(b));
   }
   return new Picture(width, height, pixels);
 }
+
 let state = {
   tool: "draw",
   color: "#000000",
